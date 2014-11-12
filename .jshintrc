@@ -1,9 +1,0 @@
-{
-	"predef": [
-		"mediaWiki",
-		"jQuery",
-        "plastic"
-	],
-	"browser": true,
-	"smarttabs": true
-}
