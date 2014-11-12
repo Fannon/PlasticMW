@@ -40,7 +40,6 @@ $wgHooks['BeforePageDisplay'][] = 'PlasticMWHooks::onBeforePageDisplay';
 $wgHooks['ParserFirstCallInit'][] = 'PlasticMWHooks::onParserFirstCallInit';
 
 
-
 // Register modules
 $wgResourceModules['ext.PlasticMW'] = array(
    'scripts' => array(

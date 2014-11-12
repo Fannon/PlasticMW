@@ -10,15 +10,12 @@
 class PlasticMWHooks {
 
     /**
-     * Add welcome module to the load queue of all pages
+     * Add plastic.js library to all pages
      */
     public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
 
-
+        // Add as ResourceLoader Module
         $out->addModules('ext.PlasticMW');
-
-        // Always return true, indicating that parser initialization should
-        // continue normally.
         return true;
     }
 
@@ -28,10 +25,11 @@ class PlasticMWHooks {
      */
     public static function onParserFirstCallInit( &$parser ) {
 
-        // Add the following to a wiki page to see how it works:
+        // <plastic> tag support
+        $parser->setHook('plastic', 'PlasticMWHooks::parserTagPlastic');
 
-        //  {{#plastic: hello | hi | there }}
-        $parser->setFunctionHook('plastic', 'PlasticMWHooks::parserFunctionPlasticTag');
+        // {{#plastic }} function support
+        // $parser->setFunctionHook('plastic', 'PlasticMWHooks::parserFunctionPlastic', SFH_OBJECT_ARGS);
 
         return true;
     }
@@ -39,21 +37,64 @@ class PlasticMWHooks {
     /**
      * Parser function handler for {{#plastic: .. | .. }}
      *
+     * @todo : Easy replacement for #ask
+     *
      * @param Parser $parser
      * @param string $arg
      *
      * @return string: HTML to insert in the page.
      */
-    public static function parserFunctionPlasticTag( $parser, $value /* arg2, arg3, */ ) {
+    public static function parserFunctionPlastic( $parser, $value) {
         $args = array_slice( func_get_args(), 2 );
         $plastic = array(
             'value' => $value,
             'arguments' => $args,
         );
 
-        $output = '<pre>plastic Function: ' . htmlspecialchars( FormatJson::encode( $plastic, /*prettyPrint=*/true ) ) . '</pre>';
+        return '<pre>plastic Function: ' . htmlspecialchars(FormatJson::encode($plastic)) . '</pre>';
+    }
 
-        return $output;
+    /**
+     * Parser hook handler for <plastic>
+     *
+     * @param string $data: The content of the tag.
+     * @param array $params: The attributes of the tag.
+     * @param Parser $parser: Parser instance available to render wikitext into html, or parser methods.
+     * @param PPFrame $frame: Can be used to see what template arguments ({{{1}}}) this hook was used with.
+     *
+     * @return string: HTML to insert in the page.
+     */
+    public static function parserTagPlastic($data, $attribs, $parser, $frame ) {
+
+
+        $tagAttributes = '';
+
+
+        // If no HTML class was defined, add plastic-js so the element is recognized by plastic.js
+        if (!array_key_exists('class' , $attribs)) {
+
+            $tagAttributes .= ' class="plastic-js"';
+
+        // If HTML Class is given, search if plastic-js is already defined. If not, append it.
+        } else {
+            if (strpos($attribs['class'], 'plastic-js') === false) {
+                $attribs['class'] .= ' plastic-js';
+            }
+        }
+
+        // Append all attributes
+        foreach ($attribs as $key => $value) {
+            $tagAttributes .= ' ' . $key . '="' . $value . '"';
+        }
+
+
+        // TODO: Include default options
+
+
+        // Generate plastic.js tag
+        $html = '<div class="plastic-js"' . $tagAttributes . '>' . $data . '</div>';
+
+        return array($html, "markerType" => 'nowiki' );
     }
 
 
