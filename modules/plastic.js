@@ -1,4 +1,4 @@
-/*! plastic - v0.1.0 - 2014-10-03
+/*! plastic - v0.1.0 - 2014-11-12
 * https://github.com/Fannon/plasticjs
 * Copyright (c) 2014 Simon Heimler; Licensed MIT */
 (function (global, factory) {
@@ -1793,7 +1793,6 @@ var plastic = {
      *
      * This includes module and depencency handling and of course all available modules
      *
-     *
      * @namespace
      */
     modules: {
@@ -1841,6 +1840,69 @@ var plastic = {
 };
 
 /**
+ * plastic.js default options
+ *
+ * All options are inherited (and can be overwritten) by the specific plastic.js element
+ * Written in JSON Notation
+ *
+ * @namespace
+ * @type {Object}
+ */
+plastic.options = {
+
+    /**
+     * Debug Mode
+     *
+     * This enables logging of some informations to the console
+     * This also ignores Exception handiling. If an error occurs it will crash hard and precice.
+     *
+     * @type {boolean}
+     */
+    debug: false,
+
+    /**
+     * If true, plastic.js will keep a log object
+     * It is stored in plastic.msg._logs and can be JSON Dumped via plastic.msg.dumpLog();
+     *
+     * @type {boolean}
+     */
+    log: true,
+
+    /**
+     * Logs Benchmark Infos to the console
+     *
+     * @type {boolean}
+     */
+    benchmark: false,
+
+    /**
+     * Width of Canvas, if not given
+     * @type {string}
+     */
+    width: '100%',
+
+    /**
+     * Height of Canvas, if not given
+     * @type {string}
+     */
+    height: 'auto',
+
+    /**
+     * Default AJAX Timeout (in ms)
+     * @type {number}
+     */
+    timeout: 12000,
+
+    /**
+     * If true, an additional info box is shown below the plastic element
+     * This displays additional infos like execution time
+     * @type {boolean}
+     */
+    showInfoBox: false
+};
+
+
+/**
  * Executes plastic.js
  *
  * This is done automatically on the DOM Ready Event
@@ -1848,7 +1910,7 @@ var plastic = {
 plastic.execute = function() {
     "use strict";
 
-    if (this.options.debug) {
+    if (plastic.options.debug) {
         plastic.msg.log('[MAIN] plastic.js version v' + plastic.version + ' INIT');
     }
 
@@ -1911,11 +1973,6 @@ plastic.execute = function() {
     });
 
 };
-
-// Execute plastic.js on DOM Ready
-$(document).ready(function() {
-    plastic.execute();
-});
 
 plastic.options = {
 
@@ -3227,9 +3284,8 @@ plastic.helper.Events.prototype = {
     }
 };
 
-
 /**
- * Helper Function which acts as a facade wrapper around the Schema Validation Library
+ * Helper Function which acts as a facade wrapper around a JSON Schema validation library
  *
  * The Validation Objects should follow the JSON-Schema Standard: (http://json-schema.org/)
  * Currently it uses tv4 (https://github.com/geraintluff/tv4)
@@ -5362,3 +5418,8 @@ plastic.modules.query.Sparql.prototype = {
     }
 
 };
+
+// Execute plastic.js on DOM Ready
+$(document).ready(function() {
+    plastic.execute();
+});
