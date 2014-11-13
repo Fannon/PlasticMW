@@ -10,5 +10,5 @@ $magicWords = array();
 
 /** English (English) */
 $magicWords['en'] = array(
-    'plastic' => array( 0, 'plastic' ),
+    'plastic-ask' => array( 0, 'plastic-ask' ),
 );
