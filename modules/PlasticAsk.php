@@ -29,42 +29,67 @@ class PlasticAsk extends SMWQueryProcessor  {
         $arguments = extractOptions($params);
 
         // Variables
-        $url = '/' . 'mw' . '/api.php'; // TODO!
-        $options = Array();
-        $displayOptions = Array();
-        $displayModule = 'advanced-table'; // TODO!
+        global $wgScriptPath;
 
 
-        $html = '<div class="plastic-js">';
+        $url = $wgScriptPath . '/api.php';
+        $displayModule = 'advanced-table'; // Default display module
 
-        // Query Tag
-        $html .= '<script class="plastic-query" type="application/ask-query" data-query-url="' . $url . '">';
-        $html .= $query;
-        $html .= '</script>';
 
-        // Options Tag
-        $html .= '<script class="plastic-options" type="application/json">';
-        $html .= FormatJson::encode($options);
-        $html .= '</script>';
+        // Create the JSON API object
+        $json = array();
 
-        // Display Tag
-        $html .= '<script class="plastic-display" type="application/json" data-display-module="' . $displayModule . '">';
-        $html .= FormatJson::encode($arguments);
-        $html .= '</script>';
-
-        $html .= '</div>';
-
-        $debug = array(
-            // 'parser' => $parser,
-            'query' => $query,
-            'arguments' => $arguments,
-            'html' => $html,
+        // Provide default values and structure
+        $json['query'] = array(
+            'url' => $url,
+            'dataType' => 'application/ask-query',
+            'text' => $query
         );
 
-        // tlog($html);
-        // jlog($debug);
+        $json['display'] = array(
+            'module' => $displayModule
+        );
 
-        return array($html, "markerType" => 'nowiki' );
+        $json['options'] = array();
+
+
+        // Extend / overwrite options through given #plastic-ask arguments
+        foreach ($arguments as $key => $value) {
+
+            if ($key === 'display') {
+
+                // Overwrite display module if given
+                $json['display']['module'] = $value;
+
+            } else if ($key === 'query-url') {
+
+                // Overwrite query-url if given
+                $json['query']['url'] = $value;
+
+            } else if (substr($key, 0, 1) === "_") {
+
+                // Add global options (prefixed with _)
+                $json['options'][substr($key, 1)] = $value;
+
+            } else {
+
+                // Add display options
+                $json['display'][$key] = $value;
+            }
+        }
+
+
+        $html = '<div class="plastic-js" data-type="application/json" style="height: auto; width: 100%;"> ' . FormatJson::encode($json) . ' </div>';
+
+
+        // tlog($html);
+
+        return array(
+            $html,
+            'noparse' => true,
+            'isHTML' => true,
+            "markerType" => 'nowiki'
+        );
     }
 
 }
@@ -74,19 +99,19 @@ class PlasticAsk extends SMWQueryProcessor  {
  * Converts an array of values in form [0] => "name=value" into a real
  * associative array in form [name] => value
  *
- * @param array string $options
+ * @param array string $json
  * @return array $results
  */
-function extractOptions( array $options ) {
+function extractOptions( array $json ) {
 
     $results = array();
 
-    foreach ( $options as $option ) {
+    foreach ( $json as $option ) {
         $pair = explode( '=', $option, 2 );
         if ( count( $pair ) == 2 ) {
             $name = trim( $pair[0] );
             $value = trim( $pair[1] );
-            $results[$name] = $value;
+            $results[$name] = htmlspecialchars($value);
         }
     }
     return $results;

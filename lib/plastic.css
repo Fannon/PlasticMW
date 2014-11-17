@@ -1,20 +1,29 @@
-/*! plastic - v0.1.0 - 2014-11-12
+/*! plastic - v0.1.0 - 2014-11-14
 * https://github.com/Fannon/plasticjs
 * Copyright (c) 2014 Simon Heimler; Licensed MIT */
 .plastic-js {
     position: relative;
 }
 
-.plastic-js-display {
+/* hide all children elements of plastic.js */
+.plastic-js > * {
+    display: none;
+}
+
+.plastic-js-output {
     overflow: auto;
+    display: block;
 }
 
 .plastic-js-messages {
+    display: block;
     position: absolute;
     z-index: 8888;
     background: rgba(255, 255, 255, 0.8);
     top: 0;
     left: 0;
+    margin: 5px;
+    max-width: 98%;
 }
 .plastic-js-messages .plastic-js-msg {
     display: block;
