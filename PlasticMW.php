@@ -73,8 +73,6 @@ $wgHooks['ParserFirstCallInit'][] = 'onParserFirstCallInit';
 // CONFIGURATION                        //
 //////////////////////////////////////////
 
-// TODO!
-
 
 //////////////////////////////////////////
 // HOOK CALLBACKS                       //
